@@ -2,6 +2,7 @@ package com.manager.expedientemedico.service;
 
 import com.manager.expedientemedico.dto.PacienteRequestDTO;
 import com.manager.expedientemedico.dto.PacienteResponseDTO;
+import com.manager.expedientemedico.exception.RecursoNoEncontradoException;
 import com.manager.expedientemedico.model.Paciente;
 import com.manager.expedientemedico.model.Usuario;
 import com.manager.expedientemedico.repository.PacienteRepository;
@@ -26,7 +27,7 @@ public class PacienteService {
     public PacienteResponseDTO crear(PacienteRequestDTO dto) {
 
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
 
         Paciente paciente = new Paciente();
         paciente.setNombre(dto.getNombre());

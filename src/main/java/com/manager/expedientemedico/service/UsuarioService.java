@@ -2,6 +2,7 @@ package com.manager.expedientemedico.service;
 
 import com.manager.expedientemedico.dto.UsuarioRequestDTO;
 import com.manager.expedientemedico.dto.UsuarioResponseDTO;
+import com.manager.expedientemedico.exception.RecursoNoEncontradoException;
 import com.manager.expedientemedico.model.Rol;
 import com.manager.expedientemedico.model.Usuario;
 import com.manager.expedientemedico.repository.RolRepository;
@@ -28,7 +29,7 @@ public class UsuarioService {
     public UsuarioResponseDTO crear(UsuarioRequestDTO dto) {
 
         Rol rol = rolRepository.findById(dto.getRolId())
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Rol no encontrado"));
 
         Usuario usuario = new Usuario();
         usuario.setNombre(dto.getNombre());

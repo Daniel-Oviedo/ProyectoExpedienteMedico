@@ -2,6 +2,8 @@ package com.manager.expedientemedico.service;
 
 import com.manager.expedientemedico.dto.RegistroMedicoRequestDTO;
 import com.manager.expedientemedico.dto.RegistroMedicoResponseDTO;
+import com.manager.expedientemedico.exception.OperacionNoPermitidaException;
+import com.manager.expedientemedico.exception.RecursoNoEncontradoException;
 import com.manager.expedientemedico.model.Expediente;
 import com.manager.expedientemedico.model.RegistroMedico;
 import com.manager.expedientemedico.model.Usuario;
@@ -32,21 +34,21 @@ public class RegistroMedicoService {
     public RegistroMedicoResponseDTO crear(RegistroMedicoRequestDTO dto) {
 
         Expediente expediente = expedienteRepository.findById(dto.getExpedienteId())
-                .orElseThrow(() -> new RuntimeException("Expediente no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Expediente no encontrado"));
 
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
 
         String rol = usuario.getRol().getNombre();
 
 
         if (rol.equals("PACIENTE")) {
-            throw new RuntimeException("El paciente no puede crear registros médicos");
+            throw new OperacionNoPermitidaException("El paciente no puede crear registros médicos");
         }
 
         if (rol.equals("ENFERMERA")) {
             if (dto.getDiagnostico() != null || dto.getMedicamentos() != null) {
-                throw new RuntimeException("La enfermera no puede asignar diagnósticos ni medicamentos");
+                throw new OperacionNoPermitidaException("La enfermera no puede asignar diagnósticos ni medicamentos");
             }
         }
 

@@ -2,6 +2,7 @@ package com.manager.expedientemedico.service;
 
 import com.manager.expedientemedico.dto.ExpedienteRequestDTO;
 import com.manager.expedientemedico.dto.ExpedienteResponseDTO;
+import com.manager.expedientemedico.exception.RecursoNoEncontradoException;
 import com.manager.expedientemedico.model.Expediente;
 import com.manager.expedientemedico.model.Paciente;
 import com.manager.expedientemedico.repository.ExpedienteRepository;
@@ -26,7 +27,7 @@ public class ExpedienteService {
     public ExpedienteResponseDTO crear(ExpedienteRequestDTO dto) {
 
         Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Paciente no encontrado"));
 
         Expediente expediente = new Expediente();
         expediente.setPaciente(paciente);
@@ -46,7 +47,7 @@ public class ExpedienteService {
     public ExpedienteResponseDTO buscarPorId(Long id) {
 
         Expediente expediente = expedienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Expediente no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Expediente no encontrado"));
 
         ExpedienteResponseDTO dto = new ExpedienteResponseDTO();
         dto.setId(expediente.getId());
