@@ -1,5 +1,7 @@
 package com.manager.expedientemedico.controller;
 
+import com.manager.expedientemedico.dto.ExpedienteRequestDTO;
+import com.manager.expedientemedico.dto.ExpedienteResponseDTO;
 import com.manager.expedientemedico.model.Expediente;
 import com.manager.expedientemedico.service.ExpedienteService;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,9 @@ public class ExpedienteController {
     }
 
     @PostMapping
-    public ResponseEntity<Expediente> crear(@RequestBody Expediente expediente) {
-        return ResponseEntity.ok(expedienteService.guardar(expediente));
+    public ResponseEntity<ExpedienteResponseDTO> crear(
+            @RequestBody ExpedienteRequestDTO dto) {
+        return ResponseEntity.ok(expedienteService.crear(dto));
     }
 
     @GetMapping

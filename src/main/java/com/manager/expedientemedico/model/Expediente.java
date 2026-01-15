@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -20,17 +22,20 @@ public class Expediente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT")
-    private String observaciones;
-
-    @Column(columnDefinition = "TEXT")
-    private String medicamentos;
-
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
+    @Column(nullable = false)
+    private String estado;
+
     @OneToOne
-    @JoinColumn(name = "paciente_id", nullable = false)
+    @JoinColumn(
+            name = "paciente_id",
+            nullable = false,
+            unique = true
+    )
     private Paciente paciente;
 
+    @OneToMany(mappedBy = "expediente", cascade = CascadeType.ALL)
+    private List<RegistroMedico> registros = new ArrayList<>();
 
 }
