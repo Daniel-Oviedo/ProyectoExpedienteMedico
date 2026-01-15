@@ -1,7 +1,10 @@
 package com.manager.expedientemedico.controller;
 
+import com.manager.expedientemedico.dto.RegistroMedicoRequestDTO;
+import com.manager.expedientemedico.dto.RegistroMedicoResponseDTO;
 import com.manager.expedientemedico.model.RegistroMedico;
 import com.manager.expedientemedico.service.RegistroMedicoService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,20 +13,21 @@ import java.util.List;
 @RequestMapping("/api/registros-medicos")
 public class RegistroMedicoController {
 
-    private final RegistroMedicoService registroMedicoService;
+    private final RegistroMedicoService registroService;
 
-    public RegistroMedicoController(RegistroMedicoService registroMedicoService) {
-        this.registroMedicoService = registroMedicoService;
+    public RegistroMedicoController(RegistroMedicoService registroService) {
+        this.registroService = registroService;
     }
 
     @PostMapping
-    public RegistroMedico crear(@RequestBody RegistroMedico registro) {
-        return registroMedicoService.guardar(registro);
+    public ResponseEntity<RegistroMedicoResponseDTO> crear(
+            @RequestBody RegistroMedicoRequestDTO dto) {
+        return ResponseEntity.ok(registroService.crear(dto));
     }
 
     @GetMapping("/expediente/{id}")
-    public List<RegistroMedico> listarPorExpediente(@PathVariable Long id) {
-        return registroMedicoService.listarPorExpediente(id);
+    public List<RegistroMedicoResponseDTO> listarPorExpediente(@PathVariable Long id) {
+        return registroService.listarPorExpediente(id);
     }
 
 }

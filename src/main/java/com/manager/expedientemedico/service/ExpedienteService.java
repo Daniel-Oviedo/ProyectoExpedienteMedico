@@ -43,11 +43,33 @@ public class ExpedienteService {
         return response;
     }
 
-    public Optional<Expediente> buscarPorId(Long id) {
-        return expedienteRepository.findById(id);
+    public ExpedienteResponseDTO buscarPorId(Long id) {
+
+        Expediente expediente = expedienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expediente no encontrado"));
+
+        ExpedienteResponseDTO dto = new ExpedienteResponseDTO();
+        dto.setId(expediente.getId());
+        dto.setFechaCreacion(expediente.getFechaCreacion());
+        dto.setEstado(expediente.getEstado());
+        dto.setPacienteId(expediente.getPaciente().getId());
+
+        return dto;
     }
 
-    public List<Expediente> listar() {
-        return expedienteRepository.findAll();
+
+    public List<ExpedienteResponseDTO> listar() {
+
+        return expedienteRepository.findAll()
+                .stream()
+                .map(expediente -> {
+                    ExpedienteResponseDTO dto = new ExpedienteResponseDTO();
+                    dto.setId(expediente.getId());
+                    dto.setFechaCreacion(expediente.getFechaCreacion());
+                    dto.setEstado(expediente.getEstado());
+                    dto.setPacienteId(expediente.getPaciente().getId());
+                    return dto;
+                })
+                .toList();
     }
 }

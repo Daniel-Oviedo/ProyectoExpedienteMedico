@@ -25,8 +25,15 @@ public class ExpedienteController {
         return ResponseEntity.ok(expedienteService.crear(dto));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ExpedienteResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(expedienteService.buscarPorId(id));
+    }
+
+
     @GetMapping
-    public ResponseEntity<List<Expediente>> listar() {
+    public ResponseEntity<List<ExpedienteResponseDTO>> listar() {
         return ResponseEntity.ok(expedienteService.listar());
     }
+
 }
