@@ -7,6 +7,7 @@ import com.manager.expedientemedico.model.Rol;
 import com.manager.expedientemedico.model.Usuario;
 import com.manager.expedientemedico.repository.RolRepository;
 import com.manager.expedientemedico.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,13 +18,14 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(
-            UsuarioRepository usuarioRepository,
-            RolRepository rolRepository
-    ) {
+    public UsuarioService(UsuarioRepository usuarioRepository,
+                          RolRepository rolRepository,
+                          PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UsuarioResponseDTO crear(UsuarioRequestDTO dto) {
@@ -34,7 +36,9 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNombre(dto.getNombre());
         usuario.setEmail(dto.getEmail());
-        usuario.setPassword(dto.getPassword());
+        usuario.setPassword(
+                passwordEncoder.encode(dto.getPassword())
+        );
         usuario.setRol(rol);
 
         Usuario guardado = usuarioRepository.save(usuario);
