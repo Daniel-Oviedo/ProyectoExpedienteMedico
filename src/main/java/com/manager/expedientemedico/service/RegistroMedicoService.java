@@ -10,6 +10,7 @@ import com.manager.expedientemedico.model.Usuario;
 import com.manager.expedientemedico.repository.ExpedienteRepository;
 import com.manager.expedientemedico.repository.RegistroMedicoRepository;
 import com.manager.expedientemedico.repository.UsuarioRepository;
+import com.manager.expedientemedico.security.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,37 +35,50 @@ public class RegistroMedicoService {
     public RegistroMedicoResponseDTO crear(RegistroMedicoRequestDTO dto) {
 
         Expediente expediente = expedienteRepository.findById(dto.getExpedienteId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Expediente no encontrado"));
+                .orElseThrow(() ->
+                        new RecursoNoEncontradoException("Expediente no encontrado"));
 
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+        String email = SecurityUtils.getEmailUsuarioActual();
 
-        String rol = usuario.getRol().getNombre();
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RecursoNoEncontradoException("Usuario autenticado no encontrado"));
 
+        String rol = SecurityUtils.getRolUsuarioActual();
 
-        if (rol.equals("PACIENTE")) {
-            throw new OperacionNoPermitidaException("El paciente no puede crear registros médicos");
-        }
-
-        if (rol.equals("ENFERMERA")) {
-            if (dto.getDiagnostico() != null || dto.getMedicamentos() != null) {
-                throw new OperacionNoPermitidaException("La enfermera no puede asignar diagnósticos ni medicamentos");
-            }
-        }
-
-        if (rol.equals("MEDICO")) {
-
+        // 🚫 PACIENTE
+        if (rol.equals("ROLE_PACIENTE")) {
+            throw new OperacionNoPermitidaException(
+                    "El paciente no puede crear registros médicos"
+            );
         }
 
         RegistroMedico registro = new RegistroMedico();
         registro.setExpediente(expediente);
         registro.setUsuario(usuario);
         registro.setObservaciones(dto.getObservaciones());
-        registro.setDiagnostico(dto.getDiagnostico());
-        registro.setMedicamentos(dto.getMedicamentos());
-        registro.setPresionArterial(dto.getPresionArterial());
-        registro.setPeso(dto.getPeso());
-        registro.setAltura(dto.getAltura());
+
+        // 🩺 ENFERMERA
+        if (rol.equals("ROLE_ENFERMERA")) {
+
+            registro.setPresionArterial(dto.getPresionArterial());
+            registro.setPeso(dto.getPeso());
+            registro.setAltura(dto.getAltura());
+
+            registro.setDiagnostico(null);
+            registro.setMedicamentos(null);
+        }
+
+        // 👩‍⚕️ MÉDICA
+        else if (rol.equals("ROLE_MEDICA")) {
+
+            registro.setDiagnostico(dto.getDiagnostico());
+            registro.setMedicamentos(dto.getMedicamentos());
+
+            registro.setPresionArterial(null);
+            registro.setPeso(null);
+            registro.setAltura(null);
+        }
 
         RegistroMedico guardado = registroRepository.save(registro);
 
@@ -82,7 +96,6 @@ public class RegistroMedicoService {
 
         return response;
     }
-
 
     public List<RegistroMedicoResponseDTO> listarPorExpediente(Long expedienteId) {
 

@@ -9,7 +9,7 @@ import lombok.Setter;
 public class RegistroMedicoRequestDTO {
 
     private Long expedienteId;
-    private Long usuarioId; // médico o enfermera
+
 
     private String observaciones;
     private String diagnostico;
